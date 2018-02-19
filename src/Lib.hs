@@ -35,8 +35,8 @@ dfs :: Graph -> (Vertex -> a) -> Vertex -> IO [a]
 dfs g consumer start = do
   modifyIORef (marked start) not
   children    <- filterM shouldVisit (neighbors g start)
-  childrenRes <- (mapM (dfs g consumer) children)
-  return $ (consumer start) : (concat childrenRes)
+  childrenRes <- mapM (dfs g consumer) children
+  return $ consumer start : concat childrenRes
   where
     shouldVisit v = do
       isMarked <- readIORef (marked v)
