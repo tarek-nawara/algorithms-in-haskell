@@ -13,11 +13,9 @@ module GraphAlgorithms
     bfs
   ) where
 
-import           Data.IORef
-import           Control.Monad
-import           Data.Functor
-import           GraphRepresentation
-import qualified Data.Map.Strict as Map
+import Data.IORef
+import Control.Monad
+import GraphRepresentation
   
 -- | Implementation of depth first algorithm
 --   given the graph and a source vertex. 
