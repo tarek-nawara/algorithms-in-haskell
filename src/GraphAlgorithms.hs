@@ -13,9 +13,10 @@ module GraphAlgorithms
     bfs
   ) where
 
-import Data.IORef
-import Control.Monad
-import GraphRepresentation
+import           Data.IORef
+import           Control.Monad
+import           GraphRepresentation
+import qualified Data.Map.Strict as Map
   
 -- | Implementation of depth first algorithm
 --   given the graph and a source vertex. 
@@ -37,3 +38,6 @@ bfs g consumer source = bfsInner g consumer [source]
       children <- filterM shouldVisit (neighbors g source)
       restRes  <- bfsInner g consumer (rest ++ children)
       return $ consumer source : restRes
+
+dijkstra :: WGraph -> IO (Map.Map Int Weight)
+dijkstra = undefined

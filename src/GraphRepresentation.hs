@@ -10,6 +10,7 @@
 ---------------------------------------
 module GraphRepresentation
   ( Graph,
+    WGraph,
     Vertex(..),
     Weight,
     WVertex(..),
