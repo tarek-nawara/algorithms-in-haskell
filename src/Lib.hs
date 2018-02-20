@@ -48,8 +48,8 @@ someFunc = do
   sourceMarked <- newIORef False
   sinkMarked   <- newIORef False
   let source   =  Vertex { vid = 1, marked = sourceMarked, adj = [2] }
-  let sink     =  Vertex { vid = 2, marked = sinkMarked,   adj = [1] }
-  let g        =  Map.fromList [(1, source), (2, sink)]
+      sink     =  Vertex { vid = 2, marked = sinkMarked,   adj = [1] }
+      g        =  Map.fromList [(1, source), (2, sink)]
   visitOrder   <- dfs g vid source
   print visitOrder
   
