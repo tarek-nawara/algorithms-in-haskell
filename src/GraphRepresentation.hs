@@ -15,9 +15,9 @@ module GraphRepresentation
     Weight,
     WVertex(..),
     neighbors,
-    changeState,
-    changeWeight,
-    shouldVisit,
+    setMarked,
+    setWMarked,
+    setWeight,
     resetGraph,
     resetWGraph,
     buildGraph,
@@ -49,6 +49,7 @@ data Vertex = Vertex
 --   a weighted graph.
 data WVertex = WVertex
   { wvid    :: Int
+  , wmarked :: IORef Bool
   , weight  :: IORef Weight
   , outgo   :: [Edge]
   }
@@ -58,28 +59,32 @@ data WVertex = WVertex
 neighbors :: Graph -> Vertex -> [Vertex]
 neighbors g v = map (\vid -> g Map.! vid) (adj v)
 
--- | Change the marked state of a vertex
-changeState :: Vertex -> IO ()
-changeState v = modifyIORef (marked v) not
+-- | Change the marked state of an unweighted vertex
+setMarked :: Vertex -> Bool -> IO ()
+setMarked v newMarked = modifyIORef (marked v) (\_ -> newMarked)
 
-changeWeight :: WVertex -> Weight -> IO ()
-changeWeight v newWeight = modifyIORef (weight v) (\_ -> newWeight)
+-- | Change the marked state of weighed vertex
+setWMarked :: WVertex -> Bool -> IO ()
+setWMarked v newMarked = modifyIORef (wmarked v) (\_ -> newMarked)
 
--- | Check wither the vertex is marked or not
-shouldVisit :: Vertex -> IO Bool
-shouldVisit v = do
-  isMarked <- readIORef (marked v)
-  return (not isMarked)
+-- | Change the weight of a vertex
+--   in a weighted graph.
+setWeight :: WVertex -> Weight -> IO ()
+setWeight v newWeight = modifyIORef (weight v) (\_ -> newWeight)
 
 -- | Reset the state of all vertices
 --   in an unweighted graph.
 resetGraph :: Graph -> IO ()
-resetGraph g = mapM_ (\(_, v) -> changeState v) (Map.toList g)
+resetGraph g = mapM_ (\(_, v) -> setMarked v False) (Map.toList g)
 
 -- | Reset the state of all vertices in
 --   an weighted graph.
 resetWGraph :: WGraph -> IO ()
-resetWGraph g = mapM_ (\(_, v) -> changeWeight v Infinity) (Map.toList g)
+resetWGraph g = mapM_ (\(_, v) -> resetVertex v) (Map.toList g)
+  where
+    resetVertex v = do
+      setWMarked v False
+      setWeight v Infinity
 
 -- | Build an unweighted graph from the adj list
 buildGraph :: [[Int]] -> IO Graph
@@ -99,6 +104,8 @@ buildWGraph l = Map.fromList <$> buildWGraphInner 1 l
     buildWGraphInner _ [] = return []
     buildWGraphInner wvid (outgo:rest) = do
       vWeight <- newIORef Infinity
-      let v = WVertex { wvid = wvid, weight = vWeight, outgo = outgo }
+      vMarked <- newIORef False
+      let v = WVertex { wvid = wvid, wmarked = vMarked,
+                        weight = vWeight, outgo = outgo }
       restWG <- buildWGraphInner (wvid + 1) rest
       return $ (wvid, v) : restWG

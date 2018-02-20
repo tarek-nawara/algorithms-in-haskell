@@ -19,12 +19,18 @@ import           Control.Monad
 import           GraphRepresentation
 import           Data.PQueue.Min
 import qualified Data.Map.Strict as Map
-  
+
+-- Check wither the vertex is marked or not
+shouldVisit :: Vertex -> IO Bool
+shouldVisit v = do
+  isMarked <- readIORef (marked v)
+  return (not isMarked)
+
 -- | Implementation of depth first algorithm
 --   given the graph and a source vertex. 
 dfs :: Graph -> (Vertex -> a) -> Vertex -> IO [a]
 dfs g consumer source = do
-  changeState source
+  setMarked source True
   children    <- filterM shouldVisit (neighbors g source)
   childrenRes <- mapM (dfs g consumer) children
   return $ consumer source : concat childrenRes
@@ -36,7 +42,7 @@ bfs g consumer source = bfsInner g consumer [source]
   where
     bfsInner _ _ [] = return []
     bfsInner g consumer (source:rest) = do
-      changeState source
+      setMarked source True
       children <- filterM shouldVisit (neighbors g source)
       restRes  <- bfsInner g consumer (rest ++ children)
       return $ consumer source : restRes
