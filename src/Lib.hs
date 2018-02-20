@@ -13,6 +13,7 @@ module Lib
 
 import           Data.IORef
 import           Control.Monad
+import           Data.Functor
 import qualified Data.Map.Strict as Map
 
 type Graph = Map.Map Int Vertex
@@ -63,27 +64,28 @@ bfs g consumer source = bfsInner g consumer [source]
       children <- filterM shouldVisit (neighbors g source)
       restRes  <- bfsInner g consumer (rest ++ children)
       return $ consumer source : restRes
+
+-- | Build a graph from the adj list
+buildGraph :: [[Int]] -> IO Graph
+buildGraph l = Map.fromList <$> buildGraphInner 1 l
+  where
+    buildGraphInner _ [] = return []
+    buildGraphInner vid (adj:rest) = do
+      vMarked <- newIORef False
+      let v =  Vertex { vid = vid, marked = vMarked, adj = adj }
+      restG <- buildGraphInner (vid + 1) rest
+      return $ (vid, v) : restG
   
 -- TODO: this function should be removed
 someFunc :: IO ()
 someFunc = do
-  oneMarked    <- newIORef False
-  twoMarked    <- newIORef False
-  threeMarked  <- newIORef False
-  fourMarked   <- newIORef False
-  fiveMarked   <- newIORef False
-  let vOne     =  Vertex { vid = 1, marked = oneMarked,   adj = [2, 3] }
-      vTwo     =  Vertex { vid = 2, marked = twoMarked,   adj = [5]    }
-      vThree   =  Vertex { vid = 3, marked = threeMarked, adj = [4]    }
-      vFour    =  Vertex { vid = 4, marked = fourMarked,  adj = []     }
-      vFive    =  Vertex { vid = 5, marked = fiveMarked,  adj = []     }
-      g        =  Map.fromList [(1, vOne), (2, vTwo), (3, vThree), (4, vFour), (5, vFive)]
-  bfsOrder    <- bfs g vid vOne
+  let adjList = [[2, 3], [5], [4], [], []]
+  g <- buildGraph adjList
+  bfsOrder <- bfs g vid (g Map.! 1)
   resetGraph g
-  dfsOrder    <- dfs g vid vOne
+  dfsOrder <- dfs g vid (g Map.! 1)
   putStr "BFS visit order: "
   print bfsOrder
   putStr "DFS visit order: "
   print dfsOrder
-  
   
