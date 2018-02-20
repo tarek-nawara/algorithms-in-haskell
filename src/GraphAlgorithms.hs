@@ -10,12 +10,14 @@
 ---------------------------------------
 module GraphAlgorithms
   ( dfs,
-    bfs
+    bfs,
+    dijkstra,
   ) where
 
 import           Data.IORef
 import           Control.Monad
 import           GraphRepresentation
+import           Data.PQueue.Min
 import qualified Data.Map.Strict as Map
   
 -- | Implementation of depth first algorithm
