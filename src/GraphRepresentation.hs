@@ -12,9 +12,10 @@ module GraphRepresentation
   ( Graph,
     WGraph,
     Vertex(..),
-    Weight,
+    Weight(..),
     WVertex(..),
     neighbors,
+    wneighbors,
     setMarked,
     setWMarked,
     setWeight,
@@ -31,7 +32,7 @@ import qualified Data.Map.Strict as Map
 
 type Graph  = Map.Map Int Vertex
 type WGraph = Map.Map Int WVertex
-type Edge   = (Int, Weight)
+type Edge   = (Int, Double)
 
 -- | Representation of any weight
 --   in the graph.
@@ -58,6 +59,9 @@ data WVertex = WVertex
 --   a given vertex.
 neighbors :: Graph -> Vertex -> [Vertex]
 neighbors g v = map (\vid -> g Map.! vid) (adj v)
+
+wneighbors :: WGraph -> WVertex -> [(WVertex, Double)]
+wneighbors g v = map (\(wvid, edgeWeight) -> (g Map.! wvid, edgeWeight)) (outgo v)
 
 -- | Change the marked state of an unweighted vertex
 setMarked :: Vertex -> Bool -> IO ()
