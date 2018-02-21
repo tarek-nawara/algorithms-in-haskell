@@ -28,6 +28,7 @@ module GraphRepresentation
 import           Data.IORef
 import           Control.Monad
 import           Data.Functor
+import           Control.Arrow
 import qualified Data.Map.Strict as Map
 
 type Graph  = Map.Map Int Vertex
@@ -61,20 +62,20 @@ neighbors :: Graph -> Vertex -> [Vertex]
 neighbors g v = map (\vid -> g Map.! vid) (adj v)
 
 wneighbors :: WGraph -> WVertex -> [(WVertex, Double)]
-wneighbors g v = map (\(wvid, edgeWeight) -> (g Map.! wvid, edgeWeight)) (outgo v)
+wneighbors g v = map (first ((Map.!) g)) (outgo v)
 
 -- | Change the marked state of an unweighted vertex
 setMarked :: Vertex -> Bool -> IO ()
-setMarked v newMarked = modifyIORef (marked v) (\_ -> newMarked)
+setMarked v newMarked = modifyIORef (marked v) (const newMarked)
 
 -- | Change the marked state of weighed vertex
 setWMarked :: WVertex -> Bool -> IO ()
-setWMarked v newMarked = modifyIORef (wmarked v) (\_ -> newMarked)
+setWMarked v newMarked = modifyIORef (wmarked v) (const newMarked)
 
 -- | Change the weight of a vertex
 --   in a weighted graph.
 setWeight :: WVertex -> Weight -> IO ()
-setWeight v newWeight = modifyIORef (weight v) (\_ -> newWeight)
+setWeight v newWeight = modifyIORef (weight v) (const newWeight)
 
 -- | Reset the state of all vertices
 --   in an unweighted graph.

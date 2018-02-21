@@ -69,7 +69,7 @@ dijkstra :: WGraph -> WVertex -> IO (Map.Map Int Weight)
 dijkstra g source =
   dijkstraImpl g startPQ Map.empty
   where
-    startPQ = MinPQ.singleton PQState { stateid = (wvid source), stateWeight = 0 }
+    startPQ = MinPQ.singleton PQState { stateid = wvid source, stateWeight = 0 }
 
 
 shouldTestForRelax :: WVertex -> IO Bool
@@ -85,7 +85,7 @@ relaxChild :: Double -> Double -> WVertex -> IO (Maybe WVertex)
 relaxChild parentWeight edgeWeight v = do
   vertexWeight <- readIORef (weight v)
   let newWeight = parentWeight + edgeWeight
-  if (shouldRelax vertexWeight newWeight)
+  if shouldRelax vertexWeight newWeight
     then do
     setWeight v (Only newWeight)
     return (Just v)
@@ -103,7 +103,7 @@ relaxChildren parentWeight ((v, edgeWeight):rest) = do
 vertexToPQState :: WVertex -> IO PQState
 vertexToPQState v = do
   (Only vertexWeight) <- readIORef (weight v)
-  return PQState { stateid = (wvid v), stateWeight = vertexWeight }
+  return PQState { stateid = wvid v, stateWeight = vertexWeight }
 
 -- TODO should check if the state we pull from
 -- the pq is visited or not.
@@ -112,8 +112,8 @@ dijkstraImpl
   -> MinPQ.MinQueue PQState
   -> Map.Map Int Weight
   -> IO (Map.Map Int Weight)
-dijkstraImpl g pq acc = do
-  if (MinPQ.null pq)
+dijkstraImpl g pq acc =
+  if MinPQ.null pq
     then return acc
     else do
     let (curState, newPQ) = MinPQ.deleteFindMin pq
@@ -121,7 +121,7 @@ dijkstraImpl g pq acc = do
     let newAcc = Map.insert curId (Only parentWeight) acc
     let curVertex = g Map.! curId
     setWMarked curVertex True
-    children <- filterM (\(v, _) -> shouldTestForRelax v) (wneighbors g curVertex)
+    children <- filterM (\ (v, _) -> shouldTestForRelax v) (wneighbors g curVertex)
     relaxedChildren <- relaxChildren parentWeight children
     newStates <- mapM vertexToPQState relaxedChildren
     let childPQ = MinPQ.fromList newStates
