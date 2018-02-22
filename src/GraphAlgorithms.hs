@@ -12,7 +12,6 @@ module GraphAlgorithms
   ( dfs
   , bfs
   , dijkstra
-  , dijkstraImpl
   ) where
 
 import           Control.Monad
