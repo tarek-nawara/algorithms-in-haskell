@@ -9,35 +9,39 @@
 --
 ---------------------------------------
 module GraphRepresentation
-  ( Graph,
-    WGraph,
-    Vertex(..),
-    Weight(..),
-    WVertex(..),
-    neighbors,
-    wneighbors,
-    setMarked,
-    setWMarked,
-    setWeight,
-    resetGraph,
-    resetWGraph,
-    buildGraph,
-    buildWGraph
+  ( Graph
+  , WGraph
+  , Vertex(..)
+  , Weight(..)
+  , WVertex(..)
+  , neighbors
+  , wneighbors
+  , setMarked
+  , setWMarked
+  , setWeight
+  , resetGraph
+  , resetWGraph
+  , buildGraph
+  , buildWGraph
   ) where
 
-import           Data.IORef
+import           Control.Arrow
 import           Control.Monad
 import           Data.Functor
-import           Control.Arrow
+import           Data.IORef
 import qualified Data.Map.Strict as Map
 
-type Graph  = Map.Map Int Vertex
+type Graph = Map.Map Int Vertex
+
 type WGraph = Map.Map Int WVertex
-type Edge   = (Int, Double)
+
+type Edge = (Int, Double)
 
 -- | Representation of any weight
 --   in the graph.
-data Weight = Infinity | Only Double
+data Weight
+  = Infinity
+  | Only Double
 
 -- | Representation of a vertex
 --   in an unweighed graph
@@ -98,7 +102,7 @@ buildGraph l = Map.fromList <$> buildGraphInner 1 l
     buildGraphInner _ [] = return []
     buildGraphInner vid (adj:rest) = do
       vMarked <- newIORef False
-      let v =  Vertex { vid = vid, marked = vMarked, adj = adj }
+      let v = Vertex {vid = vid, marked = vMarked, adj = adj}
       restG <- buildGraphInner (vid + 1) rest
       return $ (vid, v) : restG
 
@@ -110,7 +114,8 @@ buildWGraph l = Map.fromList <$> buildWGraphInner 1 l
     buildWGraphInner wvid (outgo:rest) = do
       vWeight <- newIORef Infinity
       vMarked <- newIORef False
-      let v = WVertex { wvid = wvid, wmarked = vMarked,
-                        weight = vWeight, outgo = outgo }
+      let v =
+            WVertex
+            {wvid = wvid, wmarked = vMarked, weight = vWeight, outgo = outgo}
       restWG <- buildWGraphInner (wvid + 1) rest
       return $ (wvid, v) : restWG

@@ -3,16 +3,15 @@
 -- Module : Main.hs
 -- algorithms in haskell
 -- Application entry point
--- 
+--
 -- author tarek-nawara
 --
 ----------------------------------
 module Main where
 
-import           GraphRepresentation(Vertex(..),
-                                     buildGraph, resetGraph)
-import           GraphAlgorithms(dfs, bfs)
-import qualified Data.Map.Strict as Map
+import qualified Data.Map.Strict     as Map
+import           GraphAlgorithms     (bfs, dfs)
+import           GraphRepresentation (Vertex (..), buildGraph, resetGraph)
 
 main :: IO ()
 main = do
@@ -25,4 +24,3 @@ main = do
   print bfsOrder
   putStr "DFS visit order: "
   print dfsOrder
-
