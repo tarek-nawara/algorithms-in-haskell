@@ -42,6 +42,7 @@ type Edge = (Int, Double)
 data Weight
   = Infinity
   | Only Double
+  deriving (Show)
 
 -- | Representation of a vertex
 --   in an unweighed graph
@@ -59,6 +60,12 @@ data WVertex = WVertex
   , weight  :: IORef Weight
   , outgo   :: [Edge]
   }
+
+instance Show Vertex where
+  show (Vertex vid _ adj) = "{id=" ++ show vid ++ ",adj=" ++ show adj
+
+instance Show WVertex where
+  show (WVertex wvid _ _ outgo) = "{id=" ++ show wvid ++ ",outgo=" ++ show outgo
 
 -- | Get all the neighbor vertices to
 --   a given vertex.
