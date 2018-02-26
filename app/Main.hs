@@ -9,9 +9,9 @@
 ----------------------------------
 module Main where
 
-import qualified Data.Map.Strict     as Map
-import           GraphAlgorithms     (bfs, dfs, dijkstra)
-import           GraphRepresentation
+import qualified Data.Map.Strict      as Map
+import           WGraphAlgorithms     (dijkstra)
+import           WGraphRepresentation
 
 main :: IO ()
 main = do
