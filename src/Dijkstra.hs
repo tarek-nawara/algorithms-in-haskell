@@ -8,7 +8,7 @@
 -- author tarek-nawara
 --
 ---------------------------------------
-module WGraphAlgorithms
+module Dijkstra
   ( dijkstra
   ) where
 

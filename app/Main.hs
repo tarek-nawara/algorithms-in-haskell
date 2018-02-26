@@ -10,7 +10,7 @@
 module Main where
 
 import qualified Data.Map.Strict      as Map
-import           WGraphAlgorithms     (dijkstra)
+import           Dijkstra             (dijkstra)
 import           WGraphRepresentation
 
 main :: IO ()

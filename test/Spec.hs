@@ -8,11 +8,11 @@
 --
 --------------------------------------
 import qualified Data.Map.Strict      as Map
+import           Dijkstra
 import           GraphAlgorithms
 import           GraphRepresentation
 import           Test.Hspec           (Spec, describe, it, shouldBe)
 import           Test.Hspec.Runner    (configFastFail, defaultConfig, hspecWith)
-import           WGraphAlgorithms
 import           WGraphRepresentation
 
 main :: IO ()
@@ -43,7 +43,7 @@ specs = do
               , (6, Only 7.0)
               ]
       actual `shouldBe` expected
-
+      
   describe "DFS Tests" $
     it "dfs sanity test" $ do
       let adjList = [[2, 3], [5], [4], [], []]
@@ -51,7 +51,7 @@ specs = do
       let expected = [1, 2, 5, 3, 4]
       actual <- dfs g vid (g Map.! 1)
       actual `shouldBe` expected
-
+      
   describe "BFS Tests" $
     it "bfs sanity test" $ do
       let adjList = [[2, 3], [5], [4], [], []]
