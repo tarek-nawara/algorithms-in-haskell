@@ -28,11 +28,12 @@ data Edge = Edge
 -- | Implementation of bellman ford graph
 --   algorithm to relax all vertices
 --   given source vertex.
-bellmanFord :: Int -> WGraph -> [Edge] -> IO ()
+bellmanFord :: Int -> WGraph -> [Edge] -> IO (Map.Map Int Weight)
 bellmanFord source g edges = do
   let srcVertex = g Map.! source
   setWeight srcVertex (Only 0)
   forM_ (Map.keys g) $ \_ -> forM_ edges $ \edge -> relaxWVertex g edge
+  getAllVerticesWeight g
 
 -- Relax dest vertex.
 relaxWVertex :: WGraph -> Edge -> IO ()
@@ -47,3 +48,13 @@ relaxWVertex g edge = do
     (Only xw, Only yw) -> do
       let newWeight = edgeWeight edge + xw
       when (newWeight < yw) $ setWeight y (Only newWeight)
+
+-- Build bellman ford final result
+getAllVerticesWeight :: WGraph -> IO (Map.Map Int Weight)
+getAllVerticesWeight g = do
+  l <- mapM mapper (Map.toList g)
+  return $ Map.fromList l
+  where
+    mapper (k, v) = do
+      w <- readIORef (weight v)
+      return (k, w)
