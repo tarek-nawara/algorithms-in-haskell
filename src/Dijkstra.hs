@@ -41,10 +41,11 @@ instance Ord PQState where
 --   this implementation will return all shortest path
 --   between the given source node and all
 --   the graph nodes.
-dijkstra :: WGraph -> WVertex -> IO (Map.Map Int Weight)
-dijkstra g source = do
-  setWeight source (Only 0)
-  startState <- vertexToPQState source
+dijkstra :: Int -> WGraph -> IO (Map.Map Int Weight)
+dijkstra source g = do
+  let sourceVertex = g Map.! source
+  setWeight sourceVertex (Only 0)
+  startState <- vertexToPQState sourceVertex
   resMap <- dijkstraImpl g (MinPQ.singleton startState) Map.empty
   let nonIncludedKeys =
         Map.fromList [(k, Infinity) | k <- Map.keys g, Map.notMember k resMap]

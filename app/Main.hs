@@ -18,6 +18,5 @@ main = do
   let adjList =
         [[(2, 2), (4, 1)], [(3, 5), (5, 3)], [(6, 1)], [(5, 4)], [(6, 2)], []]
   g <- buildWGraph adjList
-  let source = g Map.! 1
-  res <- dijkstra g source
+  res <- dijkstra 1 g
   print res

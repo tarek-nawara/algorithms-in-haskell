@@ -32,8 +32,7 @@ specs = do
             , []
             ]
       g <- buildWGraph adjList
-      let source = g Map.! 1
-      actual <- dijkstra g source
+      actual <- dijkstra 1 g
       let expected =
             Map.fromList
               [ (1, Only 0.0)
@@ -55,9 +54,17 @@ specs = do
             , [(6, 2)]
             , []
             ]
+      let edges =
+            [ Edge {src = 1, dest = 2, edgeWeight = 2}
+            , Edge {src = 1, dest = 4, edgeWeight = 1}
+            , Edge {src = 2, dest = 3, edgeWeight = 5}
+            , Edge {src = 2, dest = 5, edgeWeight = 3}
+            , Edge {src = 3, dest = 6, edgeWeight = 1}
+            , Edge {src = 4, dest = 5, edgeWeight = 4}
+            , Edge {src = 5, dest = 6, edgeWeight = 2}
+            ]
       g <- buildWGraph adjList
-      let source = g Map.! 1
-      actual <- dijkstra g source
+      actual <- bellmanFord 1 g edges
       let expected =
             Map.fromList
               [ (1, Only 0.0)
