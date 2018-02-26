@@ -42,7 +42,7 @@ type Edge = (Int, Double)
 data Weight
   = Infinity
   | Only Double
-  deriving (Show)
+  deriving (Show, Eq)
 
 -- | Representation of a vertex
 --   in an unweighed graph
