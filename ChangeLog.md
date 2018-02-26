@@ -1,3 +1,3 @@
-# Changelog for first-haskell
+# Changelog for algorithms-in-haskell
 
 ## Unreleased changes
