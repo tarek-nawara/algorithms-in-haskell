@@ -66,7 +66,6 @@ shouldVisit v = do
   isMarked <- readIORef (marked v)
   return (not isMarked)
 
--- TODO add non visited nodes with `infinity` weight.
 -- | Implementation of Dijkstra algorithm
 --   this implementation will return all shortest path
 --   between the given source node and all
@@ -75,7 +74,10 @@ dijkstra :: WGraph -> WVertex -> IO (Map.Map Int Weight)
 dijkstra g source = do
   setWeight source (Only 0)
   startState <- vertexToPQState source
-  dijkstraImpl g (MinPQ.singleton startState) Map.empty
+  resMap <- dijkstraImpl g (MinPQ.singleton startState) Map.empty
+  let nonIncludedKeys =
+        Map.fromList [(k, Infinity) | k <- Map.keys g, Map.notMember k resMap]
+  return $ resMap `Map.union` nonIncludedKeys
 
 -- check if the node is already marked
 -- as part of the dijkstra graph
