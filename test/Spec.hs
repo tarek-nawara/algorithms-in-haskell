@@ -10,8 +10,8 @@
 import           BellmanFord
 import qualified Data.Map.Strict      as Map
 import           Dijkstra
-import           GraphAlgorithms
 import           GraphRepresentation
+import           GraphTraversal
 import           Test.Hspec           (Spec, describe, it, shouldBe)
 import           Test.Hspec.Runner    (configFastFail, defaultConfig, hspecWith)
 import           WGraphRepresentation

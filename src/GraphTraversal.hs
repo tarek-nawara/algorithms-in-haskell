@@ -1,14 +1,14 @@
 -------------------------------------
 -- |
--- Module : GraphAlgorithms
+-- Module : GraphTraversal
 -- algorithms in haskell
--- Implementation of graph algorithms
--- in haskell.
+-- Implementation of graph traversal
+-- algorithms in haskell.
 --
 -- author tarek-nawara
 --
 ---------------------------------------
-module GraphAlgorithms
+module GraphTraversal
   ( dfs
   , bfs
   ) where
