@@ -64,21 +64,25 @@ setWeight v newWeight = modifyIORef (weight v) (const newWeight)
 --   an weighted graph.
 resetWGraph :: WGraph -> IO ()
 resetWGraph g = mapM_ (\(_, v) -> resetVertex v) (Map.toList g)
-  where
-    resetVertex v = do
-      setWMarked v False
-      setWeight v Infinity
+ where
+  resetVertex v = do
+    setWMarked v False
+    setWeight  v Infinity
 
 -- | Build a weighted graph from adj list
 buildWGraph :: [[Edge]] -> IO WGraph
 buildWGraph l = Map.fromList <$> buildWGraphInner 1 l
-  where
-    buildWGraphInner _ [] = return []
-    buildWGraphInner wvid (outgo:rest) = do
-      vWeight <- newIORef Infinity
-      vMarked <- newIORef False
-      let v =
-            WVertex
-            {wvid = wvid, wmarked = vMarked, weight = vWeight, outgo = outgo}
-      restWG <- buildWGraphInner (wvid + 1) rest
-      return $ (wvid, v) : restWG
+ where
+  buildWGraphInner _    []           = return []
+  buildWGraphInner wvid (outgo:rest) = do
+    vWeight <- newIORef Infinity
+    vMarked <- newIORef False
+    let
+      v = WVertex
+        { wvid    = wvid
+        , wmarked = vMarked
+        , weight  = vWeight
+        , outgo   = outgo
+        }
+    restWG <- buildWGraphInner (wvid + 1) rest
+    return $ (wvid, v) : restWG

@@ -43,9 +43,9 @@ relaxWVertex g edge = do
   xwRef <- readIORef (weight x)
   ywRef <- readIORef (weight y)
   case (xwRef, ywRef) of
-    (Infinity, _) -> return ()
-    (Only xw, Infinity) -> setWeight y (Only $ edgeWeight edge + xw)
-    (Only xw, Only yw) -> do
+    (Infinity, _       ) -> return ()
+    (Only xw , Infinity) -> setWeight y (Only $ edgeWeight edge + xw)
+    (Only xw , Only yw ) -> do
       let newWeight = edgeWeight edge + xw
       when (newWeight < yw) $ setWeight y (Only newWeight)
 
@@ -54,7 +54,7 @@ getAllVerticesWeight :: WGraph -> IO (Map.Map Int Weight)
 getAllVerticesWeight g = do
   l <- mapM mapper (Map.toList g)
   return $ Map.fromList l
-  where
-    mapper (k, v) = do
-      w <- readIORef (weight v)
-      return (k, w)
+ where
+  mapper (k, v) = do
+    w <- readIORef (weight v)
+    return (k, w)

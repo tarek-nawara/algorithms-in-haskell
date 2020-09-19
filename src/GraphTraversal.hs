@@ -24,7 +24,7 @@ import           GraphRepresentation
 dfs :: Graph -> (Vertex -> a) -> Vertex -> IO [a]
 dfs g consumer source = do
   setMarked source True
-  children <- filterM shouldVisit (neighbors g source)
+  children    <- filterM shouldVisit (neighbors g source)
   childrenRes <- mapM (dfs g consumer) children
   return $ consumer source : concat childrenRes
 
@@ -32,13 +32,13 @@ dfs g consumer source = do
 --   given the graph and the source vertex.
 bfs :: Graph -> (Vertex -> a) -> Vertex -> IO [a]
 bfs g consumer source = bfsInner g consumer [source]
-  where
-    bfsInner _ _ [] = return []
-    bfsInner g consumer (source:rest) = do
-      setMarked source True
-      children <- filterM shouldVisit (neighbors g source)
-      restRes <- bfsInner g consumer (rest ++ children)
-      return $ consumer source : restRes
+ where
+  bfsInner _ _        []            = return []
+  bfsInner g consumer (source:rest) = do
+    setMarked source True
+    children <- filterM shouldVisit (neighbors g source)
+    restRes  <- bfsInner g consumer (rest ++ children)
+    return $ consumer source : restRes
 
 -- Check wither the vertex is marked or not
 shouldVisit :: Vertex -> IO Bool

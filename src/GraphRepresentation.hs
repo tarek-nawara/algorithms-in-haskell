@@ -53,10 +53,10 @@ resetGraph g = mapM_ (\(_, v) -> setMarked v False) (Map.toList g)
 -- | Build an unweighted graph from the adj list
 buildGraph :: [[Int]] -> IO Graph
 buildGraph l = Map.fromList <$> buildGraphInner 1 l
-  where
-    buildGraphInner _ [] = return []
-    buildGraphInner vid (adj:rest) = do
-      vMarked <- newIORef False
-      let v = Vertex {vid = vid, marked = vMarked, adj = adj}
-      restG <- buildGraphInner (vid + 1) rest
-      return $ (vid, v) : restG
+ where
+  buildGraphInner _   []         = return []
+  buildGraphInner vid (adj:rest) = do
+    vMarked <- newIORef False
+    let v = Vertex {vid = vid, marked = vMarked, adj = adj}
+    restG <- buildGraphInner (vid + 1) rest
+    return $ (vid, v) : restG

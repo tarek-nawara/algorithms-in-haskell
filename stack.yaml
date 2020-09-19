@@ -41,6 +41,8 @@ packages:
 # (e.g., acme-missiles-0.3)
 extra-deps:
   - pqueue-1.4.1.1
+  - mtl-2.2.2
+  - sort-1.0.0.0
 # Override default flag values for local packages and extra-deps
 # flags: {}
 
