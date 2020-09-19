@@ -6,5 +6,5 @@ practice haskell by trying to implement different algorithms in it.
 - [x] Breadth first search
 - [x] Dijkstra
 - [x] Bellman ford
-- [ ] Kruskal
+- [x] Kruskal
 - [ ] prim

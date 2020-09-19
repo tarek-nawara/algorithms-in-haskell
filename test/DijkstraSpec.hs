@@ -5,7 +5,7 @@ module DijkstraSpec
 
 --------------------------------------
 -- |
--- Module : Dijkstra.hs
+-- Module : DijkstraSpec.hs
 -- Unit testing for the implementation
 -- of the dijkstra graph algorithms
 --

@@ -22,7 +22,7 @@ main = hspecWith defaultConfig { configFastFail = True } spec
 
 spec :: Spec
 spec = do
-  describe "BellmanFord Tests" $ it "bellmanford sanity test" $ do
+  describe "Kruskal Tests" $ it "kruskal sanity test" $ do
     let edges =
           [ Edge {src = 0, dest = 1, weight = 1}
           , Edge {src = 0, dest = 2, weight = 1}
