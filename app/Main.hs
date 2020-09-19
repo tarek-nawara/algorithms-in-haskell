@@ -10,8 +10,7 @@
 module Main where
 
 import qualified Data.Map.Strict      as Map
-import           Dijkstra             (dijkstra)
-import Kruskal
+import BellmanFord
 
 main :: IO ()
 main = do
@@ -21,5 +20,5 @@ main = do
         , Edge {src = 0, dest = 3, weight = 1}
         , Edge {src = 2, dest = 3, weight = 10}
         ]
-  let res = kruskal 4 edges
+  let res = bellmanFord 4 0 edges
   putStrLn (show res)

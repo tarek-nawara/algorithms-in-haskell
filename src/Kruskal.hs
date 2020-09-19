@@ -27,12 +27,30 @@ data Edge = Edge
   { src :: Int
   , dest :: Int
   , weight :: Double
-  }
+  } deriving (Show, Eq)
 
 data UFState = UFState
   { relations :: Map.Map Site Site
   , size :: Map.Map Site Int
   }
+
+-- | Implementation of kruskal
+--   algorithm for finding MST
+kruskal :: Int -> [Edge] -> Double
+kruskal n edges =
+  let initialRelations = Map.fromList ([ (i, i) | i <- [0 .. n] ])
+      initialSize      = Map.fromList ([ (i, 1) | i <- [0 .. n] ])
+      initialState     = (UFState initialRelations initialSize)
+      sortedEdges      = sortOn (\e -> weight e) edges
+      (_, total)       = foldl (\(st, total) edge -> (move st total edge))
+                               (initialState, 0)
+                               sortedEdges
+  in  total
+ where
+  move st total edge =
+    let (usage, newState) = runState (useEdge edge) st
+    in  (newState, total + usage)
+
 
 -- | Implementation of find algorithm as part
 --   of union find, this implementation also
@@ -77,18 +95,3 @@ useEdge e = do
       _ <- unionSite r1 r2
       return (weight e)
     else return 0
-
-kruskal :: Int -> [Edge] -> Double
-kruskal n edges =
-  let initialRelations = Map.fromList ([ (i, i) | i <- [0 .. n] ])
-      initialSize      = Map.fromList ([ (i, 1) | i <- [0 .. n] ])
-      initialState     = (UFState initialRelations initialSize)
-      sortedEdges      = sortOn (\e -> weight e) edges
-      (_, total)       = foldl (\(st, total) edge -> (move st total edge))
-                               (initialState, 0)
-                               sortedEdges
-  in  total
- where
-  move st total edge =
-    let (usage, newState) = runState (useEdge edge) st
-    in  (newState, total + usage)

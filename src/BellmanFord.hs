@@ -11,50 +11,62 @@
 module BellmanFord
   ( bellmanFord
   , Edge(..)
+  , Weight(..)
   ) where
 
+import Control.Monad.State
 import           Control.Monad
-import           Data.IORef
 import qualified Data.Map.Strict      as Map
-import           WGraphRepresentation
+
+data Weight =
+  Infinity
+  | Only Double
+  deriving (Show, Eq)
+
+data BState = BState (Map.Map Int Weight)
 
 -- | Representation of a weighted edge
 data Edge = Edge
   { src        :: Int
   , dest       :: Int
-  , edgeWeight :: Double
+  , weight :: Double
   }
 
 -- | Implementation of bellman ford graph
 --   algorithm to relax all vertices
 --   given source vertex.
-bellmanFord :: Int -> WGraph -> [Edge] -> IO (Map.Map Int Weight)
-bellmanFord source g edges = do
-  let srcVertex = g Map.! source
-  setWeight srcVertex (Only 0)
-  forM_ (Map.keys g) $ \_ -> forM_ edges $ \edge -> relaxWVertex g edge
-  getAllVerticesWeight g
+bellmanFord :: Int -> Int -> [Edge] -> Map.Map Int Weight
+bellmanFord n source edges =
+  let
+    initialWeights = (Map.fromList [ (i, Infinity) | i <- [0 .. (n - 1)] ])
+    initialState   = (BState (Map.insert source (Only 0) initialWeights))
+    (BState weights) =
+      foldl (\state _ -> execState (relaxAll edges) state) initialState [1 .. n]
+  in
+    weights
+  where relaxAll edges = mapM_ (\e -> relax e) edges
 
--- Relax dest vertex.
-relaxWVertex :: WGraph -> Edge -> IO ()
-relaxWVertex g edge = do
-  let x = g Map.! src edge
-  let y = g Map.! dest edge
-  xwRef <- readIORef (weight x)
-  ywRef <- readIORef (weight y)
-  case (xwRef, ywRef) of
+
+-- relax the dest vertex of the
+-- given edge, using the current state
+-- which has the all the weights
+relax :: Edge -> State BState ()
+relax edge = do
+  (BState weights) <- get
+  let srcWeight  = weights Map.! (src edge)
+  let destWeight = weights Map.! (dest edge)
+  let edgeWeight = weight edge
+  case (srcWeight, destWeight) of
     (Infinity, _       ) -> return ()
-    (Only xw , Infinity) -> setWeight y (Only $ edgeWeight edge + xw)
-    (Only xw , Only yw ) -> do
-      let newWeight = edgeWeight edge + xw
-      when (newWeight < yw) $ setWeight y (Only newWeight)
-
--- Build bellman ford final result
-getAllVerticesWeight :: WGraph -> IO (Map.Map Int Weight)
-getAllVerticesWeight g = do
-  l <- mapM mapper (Map.toList g)
-  return $ Map.fromList l
+    (Only sw , Infinity) -> update (dest edge) (sw + edgeWeight)
+    (Only sw , Only dw ) -> if dw > sw + edgeWeight
+      then update (dest edge) (sw + edgeWeight)
+      else return ()
  where
-  mapper (k, v) = do
-    w <- readIORef (weight v)
-    return (k, w)
+  update :: Int -> Double -> State BState ()
+  update vertex weight = do
+    (BState weights) <- get
+    let newWeights = BState (Map.insert vertex (Only weight) weights)
+    put newWeights
+    return ()
+
