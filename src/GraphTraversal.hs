@@ -35,8 +35,7 @@ bfsInner adj consumer level state =
       filteredState      = Map.fromList [ (i, True) | i <- filtered ]
       newState           = TravState (filteredState `Map.union` marked)
       values             = map consumer level
-      res                = values ++ (bfsInner adj consumer filtered newState)
-  in  res
+  in  values ++ (bfsInner adj consumer filtered newState)
 
 -- | Implementation of depth first algorithm
 --   given the graph and a source vertex.

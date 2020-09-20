@@ -13,7 +13,6 @@ module GraphTraversalSpec
 --
 --------------------------------------
 import qualified Data.Map.Strict      as Map
-import           GraphRepresentation
 import           GraphTraversal
 import           Test.Hspec           (Spec, describe, it, shouldBe)
 import           Test.Hspec.Runner    (configFastFail, defaultConfig, hspecWith)
