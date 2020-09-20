@@ -14,7 +14,7 @@ module BellmanFord
   , Weight(..)
   ) where
 
-import Control.Monad.State
+import           Control.Monad.State
 import           Control.Monad
 import qualified Data.Map.Strict      as Map
 
@@ -29,7 +29,7 @@ data BState = BState (Map.Map Int Weight)
 data Edge = Edge
   { src        :: Int
   , dest       :: Int
-  , weight :: Double
+  , weight     :: Double
   }
 
 -- | Implementation of bellman ford graph
@@ -69,4 +69,3 @@ relax edge = do
     let newWeights = BState (Map.insert vertex (Only weight) weights)
     put newWeights
     return ()
-

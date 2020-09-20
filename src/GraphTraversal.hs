@@ -14,34 +14,44 @@ module GraphTraversal
   ) where
 
 import           Control.Monad
-import           Data.IORef
 import qualified Data.Map.Strict     as Map
-import qualified Data.PQueue.Min     as MinPQ
-import           GraphRepresentation
+
+type AdjMatrix = Map.Map Int [Int]
+data TravState = TravState (Map.Map Int Bool)
+
+-- | Implementation of breadth first algorithm
+--   given the graph and a source vertex.
+bfs :: AdjMatrix -> (Int -> a) -> Int -> [a]
+bfs adj consumer source =
+  let state = TravState (Map.fromList [ (i, False) | i <- Map.keys adj ])
+  in  bfsInner adj consumer [source] state
+
+bfsInner :: AdjMatrix -> (Int -> a) -> [Int] -> TravState -> [a]
+bfsInner _ _ [] _ = []
+bfsInner adj consumer level state =
+  let allNext            = concat (map (\v -> adj Map.! v) level)
+      (TravState marked) = state
+      filtered           = filter (\v -> not (marked Map.! v)) allNext
+      filteredState      = Map.fromList [ (i, True) | i <- filtered ]
+      newState           = TravState (filteredState `Map.union` marked)
+      values             = map consumer level
+      res                = values ++ (bfsInner adj consumer filtered newState)
+  in  res
 
 -- | Implementation of depth first algorithm
 --   given the graph and a source vertex.
-dfs :: Graph -> (Vertex -> a) -> Vertex -> IO [a]
-dfs g consumer source = do
-  setMarked source True
-  children    <- filterM shouldVisit (neighbors g source)
-  childrenRes <- mapM (dfs g consumer) children
-  return $ consumer source : concat childrenRes
+dfs :: AdjMatrix -> (Int -> a) -> Int -> [a]
+dfs adj consumer source =
+  let state = TravState (Map.fromList [ (i, False) | i <- Map.keys adj ])
+  in  dfsInner adj consumer source state
 
--- | Implementation of breadth first algorithm
---   given the graph and the source vertex.
-bfs :: Graph -> (Vertex -> a) -> Vertex -> IO [a]
-bfs g consumer source = bfsInner g consumer [source]
- where
-  bfsInner _ _        []            = return []
-  bfsInner g consumer (source:rest) = do
-    setMarked source True
-    children <- filterM shouldVisit (neighbors g source)
-    restRes  <- bfsInner g consumer (rest ++ children)
-    return $ consumer source : restRes
+dfsInner :: AdjMatrix -> (Int -> a) -> Int -> TravState -> [a]
+dfsInner adj consumer source state =
+  let (TravState marked) = state
+      smarked            = marked Map.! source
+      newState           = TravState (Map.insert source True marked)
+  in  if smarked
+        then []
+        else (consumer source) : concat
+          (map (\v -> dfsInner adj consumer v newState) (adj Map.! source))
 
--- Check wither the vertex is marked or not
-shouldVisit :: Vertex -> IO Bool
-shouldVisit v = do
-  isMarked <- readIORef (marked v)
-  return (not isMarked)

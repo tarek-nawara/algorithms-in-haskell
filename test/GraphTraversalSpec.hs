@@ -24,15 +24,13 @@ main = hspecWith defaultConfig { configFastFail = True } spec
 spec :: Spec
 spec = do
   describe "DFS Tests" $ it "dfs sanity test" $ do
-    let adjList = [[2, 3], [5], [4], [], []]
-    g <- buildGraph adjList
+    let adj = Map.fromList [(1, [2, 3]), (2, [5]), (3, [4]), (4, []), (5, [])]
     let expected = [1, 2, 5, 3, 4]
-    actual <- dfs g vid (g Map.! 1)
+    let actual   = dfs adj id 1
     actual `shouldBe` expected
 
   describe "BFS Tests" $ it "bfs sanity test" $ do
-    let adjList = [[2, 3], [5], [4], [], []]
-    g <- buildGraph adjList
+    let adj = Map.fromList [(1, [2, 3]), (2, [5]), (3, [4]), (4, []), (5, [])]
     let expected = [1, 2, 3, 5, 4]
-    actual <- bfs g vid (g Map.! 1)
+    let actual   = bfs adj id 1
     actual `shouldBe` expected
