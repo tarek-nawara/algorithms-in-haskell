@@ -1,10 +1,10 @@
 name:                algorithms-in-haskell
 version:             0.1.0.0
-github:              "https://gitlab.com/tarek-nawara/algorithms-in-haskell"
+github:              "tknawara/algorithms-in-haskell"
 license:             BSD3
-author:              "tarek-nawara"
-maintainer:          "tarek-nawara"
-copyright:           "2018 tarek-nawara"
+author:              "tknawara"
+maintainer:          "tknawara"
+copyright:           "2018 tknawara" 
 
 extra-source-files:
 - README.md
